@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/presentacion/GUIClientesVer.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/negocio/ConectorJdbc.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/presentacion/GUIClientesController.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/negocio/GestorClientes.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/utils/Utilidades.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/acceso/IRegistraduria.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/clientemain/Main.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/acceso/ServicioRegistraduriaSocket.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/presentacion/GUIClientesGraficaSexos.java</file>
+            <file>file:/C:/Users/Asus/Desktop/TrabajosU/SEM%206/LAB%20SOFTWARE/P4/Taller4-cliente-servidor/AgenciaViajes/src/agenciaviajes/clientemain/RunMVC.java</file>
+        </group>
+    </open-files>
+</project-private>
