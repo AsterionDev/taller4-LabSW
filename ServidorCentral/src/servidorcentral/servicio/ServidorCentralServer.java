@@ -1,33 +1,39 @@
-package registraduria.servicio;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servidorcentral.servicio;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.Properties;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import registraduria.negocio.Ciudadano;
-import registraduria.negocio.GestorCiudadano;
+import servidorcentral.negocio.Cliente;
+import servidorcentral.negocio.GestorClientes;
 
-public class RegistraduriaServer implements Runnable {
+public class ServidorCentralServer implements Runnable {
 
-    private final GestorCiudadano gestor;
+    private final GestorClientes gestor;
 
     private static ServerSocket ssock;
     private static Socket socket;
 
     private Scanner entradaDecorada;
     private PrintStream salidaDecorada;
-    private static final int PUERTO = 5005;
+    private static final int PUERTO = 5003;
 
     /**
      * Constructor
      */
-    public RegistraduriaServer() {
-        gestor = new GestorCiudadano();
+    public ServidorCentralServer() {
+        gestor = new GestorClientes();
     }
     /**
      * Logica completa del servidor
@@ -45,7 +51,7 @@ public class RegistraduriaServer implements Runnable {
      * Lanza el hilo
      */
     private static void lanzarHilo() {
-        new Thread(new RegistraduriaServer()).start();
+        new Thread(new ServidorCentralServer()).start();
     }
 
     private static void abrirPuerto() {
@@ -53,7 +59,7 @@ public class RegistraduriaServer implements Runnable {
             ssock = new ServerSocket(PUERTO);
             System.out.println("Escuchando por el puerto " + PUERTO);
         } catch (IOException ex) {
-            Logger.getLogger(RegistraduriaServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServidorCentralServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -65,7 +71,7 @@ public class RegistraduriaServer implements Runnable {
             socket = ssock.accept();
             System.out.println("Cliente conectado");
         } catch (IOException ex) {
-            Logger.getLogger(RegistraduriaServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServidorCentralServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -81,6 +87,10 @@ public class RegistraduriaServer implements Runnable {
 
         } catch (IOException e) {
             System.out.println(e);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ServidorCentralServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ServidorCentralServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -97,7 +107,7 @@ public class RegistraduriaServer implements Runnable {
     /**
      * Lee los flujos del socket
      */
-    private void leerFlujos() {
+    private void leerFlujos() throws ClassNotFoundException, SQLException {
         if (entradaDecorada.hasNextLine()) {
             // Extrae el flujo que envía el cliente
             String peticion = entradaDecorada.nextLine();
@@ -115,16 +125,9 @@ public class RegistraduriaServer implements Runnable {
      * @param peticion petición completa al estilo
      * "consultarCiudadano,983932814"
      */
-    private void decodificarPeticion(String peticion) {
-        StringTokenizer tokens = new StringTokenizer(peticion, ",");
-        String parametros[] = new String[10];
-
-        int i = 0;
-        while (tokens.hasMoreTokens()) {
-            parametros[i++] = tokens.nextToken();
-        }
-        String accion = parametros[0];
-        procesarAccion(accion, parametros);
+    private void decodificarPeticion(String peticion) throws ClassNotFoundException, SQLException {
+        
+        procesarAccion(peticion);
 
     }
 
@@ -134,18 +137,15 @@ public class RegistraduriaServer implements Runnable {
      * @param accion acción a procesar
      * @param parametros parámetros de la acción
      */
-    private void procesarAccion(String accion, String parametros[]) {
-        switch (accion) {
-            case "consultarCiudadano":
-                String id = parametros[1];
-                Ciudadano ciu = gestor.buscarCiudadano(id);
-                if (ciu == null) {
-                    salidaDecorada.println("NO_ENCONTRADO");
-                } else {
-                    salidaDecorada.println(parseToJSON(ciu));
-                }
-                break;
-        }
+    private void procesarAccion(String accion) throws ClassNotFoundException, SQLException {
+        
+                String cadena = accion;
+                Cliente cli=new Cliente();
+                parseToCliente(cli,cadena);
+                this.gestor.agregarCliente(cli);
+                System.out.println("Cliente agregado");
+                salidaDecorada.println("Cliente guardado");
+                
     }
 
     /**
@@ -160,20 +160,21 @@ public class RegistraduriaServer implements Runnable {
     }
 
     /**
-     * Convierte el objeto Ciudadano a json
+     * Deserializa el objeto json y lo convierte en un objeto Cliente
      *
-     * @param ciu Objeto ciudadano
-     * @return cadena json
+     * @param cliente Objeto tipo Cliente
+     * @param json objeto cliente en formato json
      */
-    private String parseToJSON(Ciudadano ciu) {
-        JsonObject jsonobj = new JsonObject();
-        jsonobj.addProperty("id", ciu.getCedula());
-        jsonobj.addProperty("nombres", ciu.getNombres());
-        jsonobj.addProperty("apellidos", ciu.getApellidos());
-        jsonobj.addProperty("direccion", ciu.getDireccion());
-        jsonobj.addProperty("celular", ciu.getMovil());
-        jsonobj.addProperty("email", ciu.getEmail());
-        jsonobj.addProperty("sexo", ciu.getSexo());
-        return jsonobj.toString();
+    private void parseToCliente(Cliente cliente, String json) {
+        Gson gson = new Gson();
+        Properties properties = gson.fromJson(json, Properties.class);
+        cliente.setId(properties.getProperty("id"));
+        cliente.setNombres(properties.getProperty("nombres"));
+        cliente.setApellidos(properties.getProperty("apellidos"));
+        cliente.setDireccion(properties.getProperty("direccion"));
+        cliente.setCelular(properties.getProperty("celular"));
+        cliente.setEmail(properties.getProperty("email"));
+        cliente.setSexo(properties.getProperty("sexo"));
+
     }
 }

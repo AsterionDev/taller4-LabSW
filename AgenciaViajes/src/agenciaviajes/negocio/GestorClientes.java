@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.util.Properties;
 import agenciaviajes.acceso.IRegistraduria;
+import agenciaviajes.acceso.IServidorC;
+import agenciaviajes.acceso.ServicioServidorCentralSocket;
+import com.google.gson.JsonObject;
 
 /**
  * Representa el modelo (Observable) de datos Cuando hay cambios en el estado,
@@ -17,10 +20,12 @@ import agenciaviajes.acceso.IRegistraduria;
 public class GestorClientes extends AModel {
 
     private final IRegistraduria registraduria;
+    private final IServidorC servidorCentral;
     private ConectorJdbc conector;
 
     public GestorClientes() {
         registraduria = new ServicioRegistraduriaSocket();
+        servidorCentral=new ServicioServidorCentralSocket();
         conector = new ConectorJdbc();
     }
 
@@ -130,7 +135,9 @@ public class GestorClientes extends AModel {
                 + "'" + sexo + "'"
                 + ")");
         conector.desconectarse();
-
+        
+         String respuesta = servidorCentral.ingresarCliente(this.parseToJSON(id, nombres, apellidos, direccion, celular, email, sexo));
+        
         this.notificar();
     }
 
@@ -162,7 +169,23 @@ public class GestorClientes extends AModel {
         this.notificar();
 
     }
-
+    /**
+     * Convierte el objeto Ciudadano a json
+     *
+     * @param ciu Objeto ciudadano
+     * @return cadena json
+     */
+    private String parseToJSON(String id, String nombres, String apellidos, String direccion, String celular, String email, String sexo) {
+        JsonObject jsonobj = new JsonObject();
+        jsonobj.addProperty("id", id);
+        jsonobj.addProperty("nombres", nombres);
+        jsonobj.addProperty("apellidos", apellidos);
+        jsonobj.addProperty("direccion", direccion);
+        jsonobj.addProperty("celular", celular);
+        jsonobj.addProperty("email", email);
+        jsonobj.addProperty("sexo", sexo);
+        return jsonobj.toString();
+    }
     /**
      * Elimina un cliente de la base de datos
      *

@@ -1,5 +1,6 @@
 package agenciaviajes.acceso;
 
+import agenciaviajes.negocio.Cliente;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -11,13 +12,13 @@ import java.util.logging.Logger;
  *
  * @author ahurtado, wpantoja, rzambran
  */
-public class ServicioRegistraduriaSocket implements IRegistraduria {
+public class ServicioServidorCentralSocket implements IServidorC {
 
     private Socket socket = null;
     private Scanner entradaDecorada;
     private PrintStream salidaDecorada;
     private final String IP_SERVIDOR = "localhost";
-    private final int PUERTO = 5005;
+    private final int PUERTO = 5003;
 
     /**
      * Obtiene el registro de un cliente en formato Json
@@ -26,28 +27,28 @@ public class ServicioRegistraduriaSocket implements IRegistraduria {
      * @return json con el registro del cliente
      */
     @Override
-    public String obtenerClienteDeLaRegistraduria(String id) {
+    public String ingresarCliente(String cli) {
         String respuesta = null;
         try {
             conectar(IP_SERVIDOR, PUERTO);
-            respuesta = leerFlujoEntradaSalida(id);
+            respuesta = leerFlujoEntradaSalida(cli);
             cerrarFlujos();
             desconectar();
 
         } catch (IOException ex) {
-            Logger.getLogger(ServicioRegistraduriaSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServicioServidorCentralSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         return respuesta;
 
     }
 
-    private String leerFlujoEntradaSalida(String id) throws IOException {
+    private String leerFlujoEntradaSalida(String cli) throws IOException {
         String respuesta = "";
         entradaDecorada = new Scanner(socket.getInputStream());
         salidaDecorada = new PrintStream(socket.getOutputStream());
         salidaDecorada.flush();
         // Usando el protocolo de comunicación
-        salidaDecorada.println("consultarCiudadano," + id);
+        salidaDecorada.println(cli);
         if (entradaDecorada.hasNextLine()) {
             respuesta = entradaDecorada.nextLine();
         }
@@ -63,7 +64,7 @@ public class ServicioRegistraduriaSocket implements IRegistraduria {
         try {
             socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(ServicioRegistraduriaSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServicioServidorCentralSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
